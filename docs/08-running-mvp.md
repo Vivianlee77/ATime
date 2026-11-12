@@ -1,10 +1,12 @@
-# 屏幕时光 MVP 使用说明
+# ATime MVP 使用说明
 
 版本：0.1.0；日期：2026-11-12。面向 Windows 11 x64 的本地桌面应用。
 
 ## 启动
 
-解压整个 `ScreenTimeCompanion-v0.1.0-win-x64.zip`，进入文件夹双击 `ScreenTimeCompanion.exe`。不要只复制其中一个 exe，其他 DLL 和运行库必须保留。此包已包含 .NET 运行环境，不需要安装开发 SDK，不需要管理员权限。
+解压整个 `ATime-v0.1.0-win-x64.zip`，进入文件夹双击 `ATime.exe`。不要只复制其中一个 exe，其他 DLL 和运行库必须保留。此包已包含 .NET 运行环境，不需要安装开发 SDK，不需要管理员权限。
+
+下载入口：[v0.1.0 Release](https://github.com/Vivianlee77/ATime/releases/tag/v0.1.0) · [Windows x64 运行包](https://github.com/Vivianlee77/ATime/releases/download/v0.1.0/ATime-v0.1.0-win-x64.zip)。请下载带 `win-x64` 的 ZIP，`Source code` 是源码。Release 同时提供 SHA-256 校验文件。
 
 程序启动后开始记录当前本地会话，在桌面显示小窗并出现在系统托盘。第一次启动没有以前的数据；已经退出或尚未安装期间的用时无法补回。开发测试使用独立目录，正式首次启动不会出现测试数据。
 
@@ -23,13 +25,15 @@
 
 ## 隐藏、暂停、退出
 
-小窗的“×”只隐藏，小窗或统计窗口关闭后仍在后台记录。单击托盘图标可找回小窗；右键托盘图标可查看统计、暂停/恢复或退出。退出后不再统计。若系统折叠托盘图标，可在任务栏的隐藏图标区域找到屏幕时光。
+小窗的“×”只隐藏，小窗或统计窗口关闭后仍在后台记录。单击托盘图标可找回小窗；右键托盘图标可查看统计、暂停/恢复或退出。退出后不再统计。若系统折叠托盘图标，可在任务栏的隐藏图标区域找到ATime。
 
 点击“暂停记录”会冻结两种指标。已暂停时重新启动仍保持暂停，必须主动恢复。数据库故障时程序停止记录并显示保存失败，每隔约 5 秒尝试恢复，不在失败期间伪造使用时长。
 
 ## 数据与隐私
 
-默认数据库为 `%LOCALAPPDATA%\ScreenTimeCompanion\usage.db`，配置也保存在该库中。数据是本地明文，普通运行无需联网；不读取窗口标题、按键内容、剪贴板、网址或截图。应用身份使用路径哈希，不默认保存完整可执行路径。
+默认数据库为 `%LOCALAPPDATA%\ATime\usage.db`，配置也保存在该库中。数据是本地明文，普通运行无需联网；不读取窗口标题、按键内容、剪贴板、网址或截图。应用身份使用路径哈希，不默认保存完整可执行路径。
+
+旧版兼容：若 `%LOCALAPPDATA%\ATime\usage.db` 不存在而 `%LOCALAPPDATA%\ScreenTimeCompanion\usage.db` 已存在，直接沿用旧目录的数据库和设置，不自动复制或合并。升级前先从托盘退出旧程序；备份时退出程序后复制实际数据目录。
 
 导出为带 UTF-8 BOM 的 CSV，包含选定范围的逐日应用汇总及两种时长列。导出失败会明确提示，不自动发送到任何服务器。清空历史需点击确认，保留空闲阈值、小窗位置、置顶和暂停选择；外部 CSV 不自动删除。
 
@@ -41,7 +45,7 @@
 
 Windows 锁定、电源和显示状态处理已接入；本轮未主动锁定或休眠用户电脑，亦未完成 24 小时稳定性测试。代码包含确定性状态机回归测试，不能以此代替所有硬件验证。
 
-本地构建未配置作者的代码签名证书。公开发行签名和安装器可在下一阶段补齐。
+v0.1.0 运行包未配置代码签名证书，Windows 可能显示未知发布者提示；请确认从本仓库 Release 下载，并可用附带的 `.sha256` 文件核对完整性。签名和安装器将在后续评估。
 
 ## 从源码构建
 
@@ -51,6 +55,6 @@ Windows 锁定、电源和显示状态处理已接入；本轮未主动锁定或
 ./scripts/build.ps1 -Publish
 ```
 
-脚本还原依赖、Release 编译、运行计时/存储测试，再生成 Windows x64 自包含目录和 ZIP。推送和 Pull Request 会触发 [GitHub Actions](https://github.com/Vivianlee77/screen-time-companion/actions)；成功运行后可在对应任务的 Artifacts 中下载 Windows 运行包。
+脚本还原依赖、Release 编译、运行计时/存储测试，再生成 Windows x64 自包含目录和 ZIP。推送和 Pull Request 会触发 [GitHub Actions](https://github.com/Vivianlee77/ATime/actions)；成功运行后可在对应任务的 Artifacts 中下载 Windows 运行包。
 
 仅开发诊断可使用 `--smoke-test --data-dir <独立目录> --seconds 15` 观测采集，或 `--controller-test --data-dir <全新独立目录>` 验证暂停/恢复/重启/导出/清除。诊断记录不随分发包提供；不要将这些测试命令指向真实使用数据目录。

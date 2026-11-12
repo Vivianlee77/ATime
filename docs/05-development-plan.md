@@ -42,24 +42,24 @@ M0 是关键决策点：若显示初始状态、现代应用身份或锁屏边�
 以下为开始实现时创建的结构；当前交付只有文档和原型。
 
 ```text
-screen-time-companion/
+ATime/
 ├─ README.md
 ├─ docs/                          # 本次设计与开发规范
 ├─ prototype/index.html           # 本次界面演示
 ├─ src/
-│  ├─ ScreenTimeCompanion.App/     # WPF UI、托盘、组合根
-│  ├─ ScreenTimeCompanion.Domain/  # 状态机、规则与区间
-│  ├─ ScreenTimeCompanion.Application/
-│  ├─ ScreenTimeCompanion.Windows/ # Win32 P/Invoke 及采集
-│  └─ ScreenTimeCompanion.Infrastructure/
+│  ├─ ATime.App/     # WPF UI、托盘、组合根
+│  ├─ ATime.Domain/  # 状态机、规则与区间
+│  ├─ ATime.Application/
+│  ├─ ATime.Windows/ # Win32 P/Invoke 及采集
+│  └─ ATime.Infrastructure/
 ├─ tests/
-│  ├─ ScreenTimeCompanion.Domain.Tests/
-│  └─ ScreenTimeCompanion.Integration.Tests/
+│  ├─ ATime.Domain.Tests/
+│  └─ ATime.Integration.Tests/
 ├─ packaging/                     # 安装与升级脚本
 ├─ .github/workflows/ci.yml
 ├─ Directory.Packages.props
 ├─ global.json
-└─ ScreenTimeCompanion.slnx
+└─ ATime.slnx
 ```
 
 项目引用方向保持 `App → Application → Domain`；Windows/Infrastructure 实现 Application/Domain 声明的边界接口，通过 App 组合。Domain 单测不能依赖真实 HWND、机器时间和用户环境。
@@ -84,7 +84,7 @@ screen-time-companion/
 dotnet restore --locked-mode
 dotnet build -c Release --no-restore
 dotnet test -c Release --no-build
-dotnet publish src/ScreenTimeCompanion.App/ScreenTimeCompanion.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -p:PublishTrimmed=false -o artifacts/win-x64
+dotnet publish src/ATime.App/ATime.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -p:PublishTrimmed=false -o artifacts/win-x64
 ```
 
 这是后续工程命令示意；当前无 `.csproj`，不能对本设计包直接运行。首次建立锁文件时先普通 restore，再提交锁文件供 CI 使用。暂不追求单文件或裁剪，先验证 WPF、托盘与原生 SQLite 依赖完整可部署。

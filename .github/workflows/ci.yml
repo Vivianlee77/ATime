@@ -18,8 +18,8 @@ jobs:
         run: ./scripts/build.ps1 -Publish
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ScreenTimeCompanion-win-x64
+          name: ATime-win-x64
           path: |
-            artifacts/ScreenTimeCompanion-v0.1.0-win-x64.zip
-            artifacts/ScreenTimeCompanion-v0.1.0-win-x64.zip.sha256
+            artifacts/ATime-v0.1.0-win-x64.zip
+            artifacts/ATime-v0.1.0-win-x64.zip.sha256
           if-no-files-found: error

@@ -15,7 +15,7 @@ Core 负责确定性计时；Windows 通过前台 Hook、1秒补偿采样、最�
 | 检查 | 结果 |
 | --- | --- |
 | Core.Tests | 30/30通过，0跳过；前台归属、空闲恢复、跨日/DST、时钟调整、缺口、封口及随机不变量 |
-| Storage.Tests | 14/14通过，0跳过；幂等更新、封口保护、事务回滚、对账、设置/清除、备份与重开 |
+| Storage.Tests | 17/17通过，0跳过；原14项幂等更新、事务、对账和设置测试，以及3项旧版目录兼容检查 |
 | InputTickConverter | 9项通过；普通输入、32位回绕、微小未来值、越界与异常 |
 | Release 编译 | 0错误、0警告；WPF负责DPI，显式抑制仅面向纯WinForms应用的WFO0003提示 |
 | SQLite 原生版本 | 实际加载3.53.4，包含设计要求的WAL修复；integrity_check返回ok |
@@ -37,6 +37,12 @@ Core 负责确定性计时；Windows 通过前台 Hook、1秒补偿采样、最�
 - 前台 Hook 请求一次即时采样，极短连续切换可能合并；没有宣称亚秒级精确捕获所有窗口切换。
 - 本轮未主动锁定、休眠或断开用户电脑；这些分支有计时测试和原生事件处理，尚需真实硬件矩阵验证。
 - 24小时稳定性、CPU/内存基准、100万段查询性能、多显示器混合DPI、ARM64与Windows10未完成验收。
-- 未签名的本地ZIP已可运行；以上结果来自本地验证，远端状态见 [GitHub Actions](https://github.com/Vivianlee77/screen-time-companion/actions)。尚未发布GitHub Release或配置代码签名。
+- Windows 自包含 ZIP 已通过本地编译和打包校验；远端状态见 [GitHub Actions](https://github.com/Vivianlee77/ATime/actions)，v0.1.0 分发入口为 [GitHub Release](https://github.com/Vivianlee77/ATime/releases/tag/v0.1.0)。未配置代码签名。
+
+## ATime 改名与发布检查
+
+2026-11-12 将解决方案、工程、命名空间、WPF/托盘文本和可执行文件统一为 ATime。Release 构建0错误、0警告；30项计时测试、17项存储与兼容测试、9项输入转换检查通过。旧数据兼容测试验证首次使用选择新目录、已有旧库原位重开及设置保留、同时存在两库时优先新库且不覆盖任一数据库。
+
+运行包入口为 `ATime-win-x64/ATime.exe`，包含 .NET 运行环境和使用说明；ZIP完整性与SHA-256已核对，不包含数据库、CSV、日志、浏览器缓存或旧名称可执行文件。公开运行包以对应提交的 Windows CI 产物为准，同时提供 `.sha256` 文件。
 
 运行证据保存在本地 `artifacts/`，不加入源码仓库或分发ZIP，避免携带测试应用使用记录。

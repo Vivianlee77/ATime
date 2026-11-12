@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ATime.App/ATime.App.csproj" />
+    <Project Path="src/ATime.Core/ATime.Core.csproj" />
+    <Project Path="src/ATime.Storage/ATime.Storage.csproj" />
+    <Project Path="src/ATime.Windows/ATime.Windows.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ATime.Core.Tests/ATime.Core.Tests.csproj" />
+    <Project Path="tests/ATime.Storage.Tests/ATime.Storage.Tests.csproj" />
+  </Folder>
+</Solution>

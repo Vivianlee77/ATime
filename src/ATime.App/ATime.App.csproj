@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>0.1.0</Version>
+    <AssemblyName>ATime</AssemblyName>
+    <Product>ATime</Product>
+    <Title>ATime</Title>
+    <Description>Windows screen time and foreground application usage tracker.</Description>
+    <Authors>Vivianlee77</Authors>
+    <!-- WPF owns this process and requires manifest DPI awareness; WinForms is only the tray/signal sink. -->
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../ATime.Core/ATime.Core.csproj" />
+    <ProjectReference Include="../ATime.Windows/ATime.Windows.csproj" />
+    <ProjectReference Include="../ATime.Storage/ATime.Storage.csproj" />
+  </ItemGroup>
+</Project>

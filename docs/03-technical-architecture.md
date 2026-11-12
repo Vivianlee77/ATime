@@ -126,7 +126,7 @@ WPF 使用 `ShutdownMode=OnExplicitShutdown`，托盘采用 `System.Windows.Form
 
 ## 8. 本地数据与错误策略
 
-建议目录 `%LOCALAPPDATA%\ScreenTimeCompanion\`，含 `usage.db`、图标缓存和日志。数据库为当前账户可访问的本地明文文件，继承用户目录权限；不声称数据库已加密。首版无遥测和后台网络调用，日志滚动上限 10 MB、保留 7 天，不含应用切换流水或完整路径。
+建议目录 `%LOCALAPPDATA%\ATime\`，含 `usage.db`、图标缓存和日志。数据库为当前账户可访问的本地明文文件，继承用户目录权限；不声称数据库已加密。首版无遥测和后台网络调用，日志滚动上限 10 MB、保留 7 天，不含应用切换流水或完整路径。
 
 `Microsoft.Data.Sqlite` 作为轻量 ADO.NET 数据访问层，不额外引入 ORM。[官方介绍](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/)。迁移、事务、恢复见文档 04。依赖锁文件同时确认实际装载的 SQLite 原生库修订版本，满足官方 WAL 修复要求。[SQLite WAL 修复说明](https://sqlite.org/wal.html#the_wal_reset_bug)。
 

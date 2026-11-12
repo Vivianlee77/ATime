@@ -1,0 +1,37 @@
+name: Publish prepared release
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: Successful Windows build run that produced the release ZIP
+        required: true
+        type: string
+      release_id:
+        description: Prepared draft release targeting the same source commit
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: publish-release-${{ inputs.release_id }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify Windows artifact, upload assets and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ATIME_BUILD_RUN_ID: ${{ inputs.build_run_id }}
+          ATIME_RELEASE_ID: ${{ inputs.release_id }}
+        run: python3 .github/scripts/publish_release.py

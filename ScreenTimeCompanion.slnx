@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ScreenTimeCompanion.App/ScreenTimeCompanion.App.csproj" />
+    <Project Path="src/ScreenTimeCompanion.Core/ScreenTimeCompanion.Core.csproj" />
+    <Project Path="src/ScreenTimeCompanion.Storage/ScreenTimeCompanion.Storage.csproj" />
+    <Project Path="src/ScreenTimeCompanion.Windows/ScreenTimeCompanion.Windows.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ScreenTimeCompanion.Core.Tests/ScreenTimeCompanion.Core.Tests.csproj" />
+    <Project Path="tests/ScreenTimeCompanion.Storage.Tests/ScreenTimeCompanion.Storage.Tests.csproj" />
+  </Folder>
+</Solution>

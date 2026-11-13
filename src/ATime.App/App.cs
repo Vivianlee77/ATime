@@ -17,6 +17,7 @@ public sealed class App : System.Windows.Application
     private WidgetWindow? _widget;
     private DashboardWindow? _dashboard;
     private Forms.NotifyIcon? _tray;
+    private Icon? _trayIcon;
     private Forms.ToolStripMenuItem? _pauseItem;
     private FileStream? _instanceLock;
     private string _pipeName = "";
@@ -93,7 +94,8 @@ public sealed class App : System.Windows.Application
         menu.Items.Add(_pauseItem);
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add("退出 ATime",null,(_,_) => ExitApplication());
-        _tray = new Forms.NotifyIcon { Icon = SystemIcons.Application, Visible = true, Text = "ATime · 正在启动", ContextMenuStrip = menu };
+        _trayIcon = Branding.CreateTrayIcon();
+        _tray = new Forms.NotifyIcon { Icon = _trayIcon, Visible = true, Text = "ATime · 正在启动", ContextMenuStrip = menu };
         _tray.MouseClick += (_,args) => { if (args.Button == Forms.MouseButtons.Left) ShowWidget(); };
     }
 
@@ -149,7 +151,7 @@ public sealed class App : System.Windows.Application
         try { if (_tracker is not null) await _tracker.StopAsync().WaitAsync(TimeSpan.FromSeconds(10)); }
         catch (Exception error) { MessageBox.Show("部分记录未能保存："+error.Message,"ATime"); }
         finally {
-            _tray?.Dispose(); _widget?.CloseForExit(); _dashboard?.CloseForExit();
+            DisposeTray(); _widget?.CloseForExit(); _dashboard?.CloseForExit();
             _instanceLock?.Dispose(); Shutdown();
         }
     }
@@ -160,9 +162,24 @@ public sealed class App : System.Windows.Application
         {
             _exiting = true; _pipeCancellation.Cancel();
             try { _tracker?.StopAsync().Wait(TimeSpan.FromSeconds(3)); } catch { /* OS shutdown has a finite budget. */ }
-            _tray?.Dispose();
+            DisposeTray();
         }
         base.OnSessionEnding(e);
     }
+
+    private void DisposeTray()
+    {
+        _tray?.Dispose();
+        _tray = null;
+        _trayIcon?.Dispose();
+        _trayIcon = null;
+    }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        DisposeTray();
+        base.OnExit(e);
+    }
+
     internal static string? Argument(string[] args,string name) { var index = Array.IndexOf(args,name); return index>=0 && index+1<args.Length ? args[index+1] : null; }
 }

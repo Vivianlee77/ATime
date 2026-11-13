@@ -38,6 +38,7 @@ public sealed class DashboardWindow : Window
     {
         _service = service;
         Title = "ATime · 使用概览";
+        Icon = Branding.WindowIcon;
         Width = 1000;
         Height = 720;
         MinWidth = 760;
@@ -79,7 +80,12 @@ public sealed class DashboardWindow : Window
         title.Children.Add(UiStyles.Text("ATime", 25, weight: FontWeights.SemiBold));
         _date.Margin = new Thickness(0, 5, 0, 0);
         title.Children.Add(_date);
-        header.Children.Add(title);
+        var brand = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+        var logo = UiStyles.Logo(42);
+        logo.Margin = new Thickness(0, 0, 12, 0);
+        brand.Children.Add(logo);
+        brand.Children.Add(title);
+        header.Children.Add(brand);
         root.Children.Add(header);
 
         var filters = new DockPanel { Margin = new Thickness(0, 0, 0, 18) };

@@ -1,8 +1,12 @@
 # ATime
 
+<img src="assets/branding/atime-icon-v1.png" alt="ATime 图标" width="88" height="88" />
+
 **一个安静的桌面小窗，看看今天的时间去了哪里。**
 
 ATime 是面向 Windows 的本地屏幕时间工具：统计有效使用时长和各软件的前台用时，在桌面实时展示，并将历史记录保存在自己的电脑上。
+
+当前源码将同一图标内嵌到 EXE、窗口和系统托盘，小窗与统计页也使用统一标识。最新开发构建可从 [GitHub Actions](https://github.com/Vivianlee77/ATime/actions/workflows/ci.yml) 下载；下方固定版本下载链接对应 v0.1.0 首发包。
 
 [![Windows build and tests](https://github.com/Vivianlee77/ATime/actions/workflows/ci.yml/badge.svg)](https://github.com/Vivianlee77/ATime/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/Vivianlee77/ATime)](https://github.com/Vivianlee77/ATime/releases/latest)

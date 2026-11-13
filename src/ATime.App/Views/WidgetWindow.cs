@@ -27,6 +27,7 @@ public sealed class WidgetWindow : Window
     {
         _service = service;
         Title = "ATime";
+        Icon = Branding.WindowIcon;
         Width = 280;
         Height = 360;
         ResizeMode = ResizeMode.NoResize;
@@ -72,7 +73,11 @@ public sealed class WidgetWindow : Window
         header.ColumnDefinitions.Add(new ColumnDefinition());
         header.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         header.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        var title = UiStyles.Text("⠿  ATime", 14, weight: FontWeights.SemiBold);
+        var title = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+        var logo = UiStyles.Logo(22);
+        logo.Margin = new Thickness(0, 0, 7, 0);
+        title.Children.Add(logo);
+        title.Children.Add(UiStyles.Text("ATime", 14, weight: FontWeights.SemiBold));
         title.Cursor = Cursors.SizeAll;
         title.ToolTip = "拖动移动小窗；右键选择统计口径";
         title.MouseLeftButtonDown += async (_, args) =>

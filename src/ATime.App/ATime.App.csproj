@@ -6,6 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>disable</ImplicitUsings>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>../../assets/branding/atime-icon-v1.ico</ApplicationIcon>
     <Version>0.1.0</Version>
     <AssemblyName>ATime</AssemblyName>
     <Product>ATime</Product>
@@ -16,6 +17,7 @@
     <NoWarn>$(NoWarn);WFO0003</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="../../assets/branding/atime-icon-v1.ico" LogicalName="ATime.Branding.AppIcon.ico" />
     <ProjectReference Include="../ATime.Core/ATime.Core.csproj" />
     <ProjectReference Include="../ATime.Windows/ATime.Windows.csproj" />
     <ProjectReference Include="../ATime.Storage/ATime.Storage.csproj" />

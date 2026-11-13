@@ -48,6 +48,14 @@ internal static class UiStyles
         FontSize = 12
     };
 
+    public static Image Logo(double size)
+    {
+        var image = new Image { Source = Branding.WindowIcon, Width = size, Height = size,
+            VerticalAlignment = VerticalAlignment.Center, Stretch = Stretch.Uniform };
+        RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
+        return image;
+    }
+
     public static string Duration(long milliseconds)
     {
         var seconds = Math.Max(0, milliseconds) / 1000;

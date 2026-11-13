@@ -28,6 +28,7 @@ public sealed class DashboardWindow : Window
     private readonly Button _export = UiStyles.Button("导出 CSV");
     private readonly Button _clear = UiStyles.Button("清空历史");
     private readonly ObservableCollection<UsageItem> _items = new();
+    private readonly UsageChart _chart = new();
     private bool _allowClose;
     private bool _rendering;
     private bool _busy;
@@ -40,7 +41,7 @@ public sealed class DashboardWindow : Window
         Title = "ATime · 使用概览";
         Icon = Branding.WindowIcon;
         Width = 1000;
-        Height = 720;
+        Height = Math.Max(620, Math.Min(900, SystemParameters.WorkArea.Height - 48));
         MinWidth = 760;
         MinHeight = 620;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -151,8 +152,15 @@ public sealed class DashboardWindow : Window
         Grid.SetRow(_empty, 1);
         appLayout.Children.Add(_empty);
         appPanel.Child = appLayout;
-        Grid.SetRow(appPanel, 3);
-        root.Children.Add(appPanel);
+        appPanel.Height = 280;
+        _chart.Margin = new Thickness(0, 0, 0, 18);
+        var chartAndApps = new StackPanel();
+        chartAndApps.Children.Add(_chart);
+        chartAndApps.Children.Add(appPanel);
+        var bodyScroll = new ScrollViewer { Content = chartAndApps, VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, Padding = new Thickness(0, 0, 8, 0) };
+        Grid.SetRow(bodyScroll, 3);
+        root.Children.Add(bodyScroll);
 
         var settings = new DockPanel { Margin = new Thickness(0, 18, 0, 15) };
         var rightActions = new StackPanel { Orientation = Orientation.Horizontal };
@@ -242,6 +250,7 @@ public sealed class DashboardWindow : Window
             var saved = state.LastSavedUtc is { } last ? last.ToLocalTime().ToString("HH:mm:ss", CultureInfo.InvariantCulture) : "尚未保存";
             _saved.Text = $"最近保存：{saved}  ·  采集中断：{state.GapCount} 次  ·  关闭窗口后仍在托盘运行  ·  阈值修改仅影响之后的统计";
             UpdateRows(rows, total);
+            _chart.Render(state, SelectedDays, SessionMetric);
             _empty.Visibility = _items.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         }
         finally { _rendering = false; }

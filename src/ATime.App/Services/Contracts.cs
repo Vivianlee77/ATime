@@ -1,3 +1,5 @@
+using ATime.Core;
+
 namespace ATime.App.Services;
 
 public sealed class AppSettings
@@ -16,7 +18,7 @@ public sealed class AppSettings
 public sealed record DailyUsageRow(string LocalDate, string AppId, string AppName, long EffectiveMs, long SessionMs);
 public sealed record TrackerViewState(DateOnly Today, IReadOnlyList<DailyUsageRow> Rows,
     AppSettings Settings, string Status, string CurrentApp, bool Healthy,
-    DateTimeOffset? LastSavedUtc, long GapCount);
+    DateTimeOffset? LastSavedUtc, long GapCount, IReadOnlyList<HourlyUsage> HourlyRows, int CurrentHour);
 
 public interface ITrackerService
 {

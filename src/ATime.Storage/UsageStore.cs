@@ -11,6 +11,8 @@ public sealed record StoredDailyUsage(string LocalDate, string AppId, string App
 public sealed class UsageStore : IDisposable
 {
     private readonly SqliteConnection _connection;
+    private HourlyCache? _hourlyCache;
+    private sealed record HourlyCache(string Date, TimeZoneInfo Zone, IReadOnlyList<HourlyUsage> Rows);
     public string FilePath { get; }
     public string NativeVersion { get; }
     public long CommitSequence { get; private set; }
@@ -74,6 +76,7 @@ public sealed class UsageStore : IDisposable
 
     public long Commit(IEnumerable<UsageSegment> segments)
     {
+        var cachedHours = _hourlyCache?.Rows.ToArray();
         using var transaction = _connection.BeginTransaction();
         foreach (var segment in segments)
         {
@@ -111,6 +114,8 @@ public sealed class UsageStore : IDisposable
             Add(aggregate, "$effective", segment.EffectiveMs - (old?.EffectiveMs ?? 0));
             Add(aggregate, "$session", segment.DurationMs - (old?.DurationMs ?? 0));
             aggregate.ExecuteNonQuery();
+            if (cachedHours is not null && _hourlyCache is { } cache)
+                HourlyUsageProjector.AddDelta(cachedHours, cache.Date, cache.Zone, segment, old);
         }
         using var update = _connection.CreateCommand();
         update.Transaction = transaction;
@@ -118,6 +123,8 @@ public sealed class UsageStore : IDisposable
         var version = Convert.ToInt64(update.ExecuteScalar(), CultureInfo.InvariantCulture);
         transaction.Commit();
         CommitSequence = version;
+        if (cachedHours is not null && _hourlyCache is { } previousCache)
+            _hourlyCache = previousCache with { Rows = Array.AsReadOnly(cachedHours) };
         return version;
     }
 
@@ -143,6 +150,29 @@ public sealed class UsageStore : IDisposable
         return rows;
     }
 
+    public IReadOnlyList<HourlyUsage> QueryHourly(string localDate, TimeZoneInfo zone)
+    {
+        _ = DateOnly.ParseExact(localDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+        if (_hourlyCache is { } cached && cached.Date == localDate && cached.Zone.Equals(zone)) return cached.Rows;
+        var rows = HourlyUsageProjector.EmptyDay();
+        using var command = _connection.CreateCommand();
+        command.CommandText = "SELECT start_utc,active,end_mono-start_mono FROM usage_segments WHERE local_date=$date;";
+        Add(command, "$date", localDate);
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            var hour = HourlyUsageProjector.HourAt(reader.GetInt64(0), zone);
+            var duration = reader.GetInt64(2);
+            var previous = rows[hour];
+            rows[hour] = previous with {
+                EffectiveMs = previous.EffectiveMs + (reader.GetBoolean(1) ? duration : 0),
+                SessionMs = previous.SessionMs + duration
+            };
+        }
+        _hourlyCache = new(localDate, zone, Array.AsReadOnly(rows));
+        return _hourlyCache.Rows;
+    }
+
     public void RecordCoverage(string kind, long count, DateTimeOffset utc)
     {
         using var command = _connection.CreateCommand();
@@ -160,6 +190,7 @@ public sealed class UsageStore : IDisposable
         var seq = Convert.ToInt64(command.ExecuteScalar(), CultureInfo.InvariantCulture);
         transaction.Commit();
         CommitSequence = seq;
+        _hourlyCache = null;
         Execute("PRAGMA wal_checkpoint(TRUNCATE);");
     }
 

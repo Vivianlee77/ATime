@@ -17,6 +17,8 @@ public sealed class TrackerService : ITrackerService
     private readonly Dictionary<string, UsageSegment> _pending = new();
     private readonly Dictionary<string, UsageSegment> _committedOpen = new();
     private IReadOnlyList<StoredDailyUsage> _baseRows = Array.Empty<StoredDailyUsage>();
+    private IReadOnlyList<HourlyUsage> _baseHours = HourlyUsageProjector.EmptyDay();
+    private DateOnly _baseDate;
     private AppSettings _settings;
     private UsageEngine _engine;
     private readonly TimeZoneInfo _timeZone;
@@ -51,7 +53,7 @@ public sealed class TrackerService : ITrackerService
         if (!new[] {60,180,300,600,900}.Contains(_settings.IdleThresholdSeconds)) _settings.IdleThresholdSeconds = 300;
         _timeZone = TimeZoneInfo.FindSystemTimeZoneById(_settings.ReportingTimeZoneId);
         _engine = new UsageEngine(_timeZone, _settings.IdleThresholdSeconds);
-        _state = new(Today(), Array.Empty<DailyUsageRow>(), _settings.Copy(), "等待系统状态", "—", true, null, 0);
+        _state = new(Today(), Array.Empty<DailyUsageRow>(), _settings.Copy(), "等待系统状态", "—", true, null, 0, _baseHours, 0);
         ReloadBase();
         Publish();
         _worker = Task.Run(async () => {
@@ -136,13 +138,20 @@ public sealed class TrackerService : ITrackerService
     private void ReloadBase()
     {
         var today = Today();
-        _baseRows = _store.QueryDaily(today.AddDays(-29).ToString("yyyy-MM-dd"), today.ToString("yyyy-MM-dd"));
+        // Publish both committed baselines together. A failed read must leave both previous snapshots intact.
+        var rows = _store.QueryDaily(today.AddDays(-29).ToString("yyyy-MM-dd"), today.ToString("yyyy-MM-dd"));
+        var hours = _store.QueryHourly(today.ToString("yyyy-MM-dd"), _timeZone);
+        _baseRows = rows;
+        _baseHours = hours;
+        _baseDate = today;
     }
 
     private DateOnly Today() => DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, _timeZone).DateTime);
 
     private void Publish()
     {
+        var now = TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, _timeZone);
+        var today = DateOnly.FromDateTime(now.DateTime);
         var rows = _baseRows.ToDictionary(r => (r.LocalDate, r.AppId), r => new DailyUsageRow(r.LocalDate,r.AppId,r.AppName,r.EffectiveMs,r.SessionMs));
         foreach (var segment in _pending.Values)
         {
@@ -157,8 +166,10 @@ public sealed class TrackerService : ITrackerService
         var idle = normalized?.LastInputMonotonicMs is long last && normalized.MonotonicMs-last >= _settings.IdleThresholdSeconds*1000L;
         var status = !_healthy ? "保存失败 · 已停止记录" : _settings.Paused ? "已暂停记录" : normalized?.Eligible == true ?
             (idle ? "空闲中 · 有效使用暂停" : "正在记录") : Reason(normalized?.InactiveReason);
-        var snapshot = new TrackerViewState(Today(), rows.Values.ToArray(), _settings.Copy(), status,
-            _latest?.App.DisplayName ?? "—", _healthy, _lastSaved, _previousRunGaps + _engine.GapCount);
+        var hours = HourlyUsageProjector.WithPending(_baseDate == today ? _baseHours : HourlyUsageProjector.EmptyDay(), _pending.Values, _committedOpen,
+            today.ToString("yyyy-MM-dd"), _timeZone);
+        var snapshot = new TrackerViewState(today, rows.Values.ToArray(), _settings.Copy(), status,
+            _latest?.App.DisplayName ?? "—", _healthy, _lastSaved, _previousRunGaps + _engine.GapCount, hours, now.Hour);
         Volatile.Write(ref _state, snapshot);
         if (!_dispatcher.HasShutdownStarted) _dispatcher.BeginInvoke(() => Changed?.Invoke());
     }

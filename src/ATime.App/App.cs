@@ -51,7 +51,7 @@ public sealed class App : System.Windows.Application
                 try {
                     using var client = new NamedPipeClientStream(".",_pipeName,PipeDirection.Out);
                     await client.ConnectAsync(1000);
-                    await client.WriteAsync(Encoding.UTF8.GetBytes("show"));
+                    await client.WriteAsync(Encoding.UTF8.GetBytes(e.Args.Contains("--dashboard") ? "dashboard" : "show"));
                 } catch { MessageBox.Show("ATime已在此用户的另一个会话中运行。","ATime"); }
                 Shutdown(); return;
             }
@@ -134,7 +134,9 @@ public sealed class App : System.Windows.Application
                 await server.WaitForConnectionAsync(_pipeCancellation.Token);
                 var input = new byte[16];
                 var count = await server.ReadAsync(input,_pipeCancellation.Token);
-                if (Encoding.UTF8.GetString(input,0,count)=="show") _ = Dispatcher.BeginInvoke(ShowWidget);
+                var request = Encoding.UTF8.GetString(input,0,count);
+                if (request == "show") _ = Dispatcher.BeginInvoke(ShowWidget);
+                else if (request == "dashboard") _ = Dispatcher.BeginInvoke(ShowDashboard);
             }
             catch (OperationCanceledException) { break; }
             catch (IOException) { if (!_pipeCancellation.IsCancellationRequested) await Task.Delay(500); }

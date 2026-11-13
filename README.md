@@ -6,20 +6,20 @@
 
 ATime 是面向 Windows 的本地屏幕时间工具：统计有效使用时长和各软件的前台用时，在桌面实时展示，并将历史记录保存在自己的电脑上。
 
-当前源码将同一图标内嵌到 EXE、窗口和系统托盘，小窗与统计页也使用统一标识。最新开发构建可从 [GitHub Actions](https://github.com/Vivianlee77/ATime/actions/workflows/ci.yml) 下载；下方固定版本下载链接对应 v0.1.0 首发包。
+程序将同一图标内嵌到 EXE、窗口和系统托盘，小窗与统计页也使用统一标识。
 
-**当前开发版新增「一天的节奏」**：今日按小时绘制真实使用时长，深色突出当前小时；近 7 日 / 近 30 日显示每日趋势。图表跟随有效使用 / 屏幕会话口径切换，悬停可查看精确时长，已有历史记录也可生成图表。
+**v0.1.1 新增「一天的节奏」**：今日按小时绘制真实使用时长，深色突出当前小时；近 7 日 / 近 30 日显示每日趋势。图表跟随有效使用 / 屏幕会话口径切换，悬停可查看精确时长，已有历史记录也可生成图表。
 
 [![Windows build and tests](https://github.com/Vivianlee77/ATime/actions/workflows/ci.yml/badge.svg)](https://github.com/Vivianlee77/ATime/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/Vivianlee77/ATime)](https://github.com/Vivianlee77/ATime/releases/latest)
 
-**[下载 Windows 运行包](https://github.com/Vivianlee77/ATime/releases/download/v0.1.0/ATime-v0.1.0-win-x64.zip)** · [v0.1.0 发布说明](https://github.com/Vivianlee77/ATime/releases/tag/v0.1.0) · [详细使用说明](docs/08-running-mvp.md) · [反馈问题](https://github.com/Vivianlee77/ATime/issues)
+**[下载 Windows 运行包](https://github.com/Vivianlee77/ATime/releases/download/v0.1.1/ATime-v0.1.1-win-x64.zip)** · [v0.1.1 发布说明](https://github.com/Vivianlee77/ATime/releases/tag/v0.1.1) · [详细使用说明](docs/08-running-mvp.md) · [反馈问题](https://github.com/Vivianlee77/ATime/issues)
 
 ## 下载与运行
 
-当前版本：**v0.1.0（核心 MVP）**。面向 **Windows 11 x64**；Windows 10、ARM64 和远程桌面会话尚未完成支持验证。
+当前版本：**v0.1.1（核心 MVP）**。面向 **Windows 11 x64**；Windows 10、ARM64 和远程桌面会话尚未完成支持验证。
 
-1. 下载 **`ATime-v0.1.0-win-x64.zip`**。GitHub 自动提供的 `Source code` 是源码，不是运行包。
+1. 下载 **`ATime-v0.1.1-win-x64.zip`**。GitHub 自动提供的 `Source code` 是源码，不是运行包。
 2. 将 ZIP 完整解压到可写目录，进入 `ATime-win-x64` 文件夹。
 3. 双击 **`ATime.exe`**，桌面小窗和系统托盘图标出现后即可开始统计。
 
@@ -27,14 +27,17 @@ ATime 是面向 Windows 的本地屏幕时间工具：统计有效使用时长�
 
 本版本尚未进行代码签名，Windows 可能显示未知发布者提示。请从本仓库 Release 下载；同一页面提供 `.sha256` 校验文件。
 
+从 v0.1.0 升级：先从托盘退出旧版，再完整解压并运行新版。已有历史记录和设置自动沿用，无需清空数据库；桌面快捷方式可指向新版 `ATime.exe`，添加 `--dashboard` 参数可直接打开图表统计页。
+
 ## 能做什么
 
-| 功能 | v0.1.0 行为 |
+| 功能 | v0.1.1 行为 |
 | --- | --- |
 | 有效使用时长 | 连续 5 分钟无键鼠输入后暂停累计，恢复输入后继续；阈值可选 1 / 3 / 5 / 10 / 15 分钟 |
 | 各软件使用时长 | 按前台应用归属，多个窗口和后台软件不会重复累计 |
 | 桌面小窗 | 今日时分秒、前三应用、拖动、置顶、暂停与详情入口 |
 | 统计详情 | 今日、近 7 日、近 30 日应用排行、时长和占比 |
+| 节奏与趋势图 | 今日每小时用时、近 7/30 日每日趋势，突出当前时段，悬停查看时长 |
 | 两种统计口径 | 有效使用时长与屏幕会话时长，可按阅读、视频等场景切换查看 |
 | 本地保存 | SQLite 保存历史和设置，支持 CSV 导出、清空历史 |
 | 托盘常驻 | 隐藏与恢复窗口、暂停与恢复记录、退出程序 |
@@ -51,7 +54,7 @@ ATime 是面向 Windows 的本地屏幕时间工具：统计有效使用时长�
 
 - **移动与置顶**：拖动小窗标题移动位置；点击“置顶”切换。
 - **查看详情**：点击小窗的“查看详情”，或从托盘右键菜单打开。
-- **查看节奏图（开发版）**：统计卡片下方显示「一天的节奏」。每根柱对应一个小时，零记录显示为空；鼠标移到柱上查看该小时的精确时长。切换日期范围后展示每日趋势。
+- **查看节奏图**：统计卡片下方显示「一天的节奏」。每根柱对应一个小时，零记录显示为空；鼠标移到柱上查看该小时的精确时长。切换日期范围后展示每日趋势。
 - **切换口径**：右键小窗标题选择；详情页使用下拉框。两个窗口各自保存显示选择，查看时留意指标名称。
 - **暂停与恢复**：小窗、详情页和托盘均可操作。主动暂停会跨重启保留。
 - **隐藏与退出**：窗口的“×”只隐藏，后台继续按当前状态记录。单击托盘图标找回小窗；右键托盘选择“退出 ATime”才会停止程序。
@@ -80,8 +83,8 @@ cd ATime
 ```text
 artifacts/
 ├─ ATime-win-x64/                  # 可运行目录，入口 ATime.exe
-├─ ATime-v0.1.0-win-x64.zip         # 完整运行包
-└─ ATime-v0.1.0-win-x64.zip.sha256  # SHA-256 校验值
+├─ ATime-v0.1.1-win-x64.zip         # 完整运行包
+└─ ATime-v0.1.1-win-x64.zip.sha256  # SHA-256 校验值
 ```
 
 仅构建与测试可执行 `./scripts/build.ps1`。提交和 Pull Request 会触发 [GitHub Actions](https://github.com/Vivianlee77/ATime/actions)，成功后提供构建产物；稳定版本从 Release 下载。
@@ -89,8 +92,8 @@ artifacts/
 校验下载文件（将 ZIP 与 `.sha256` 放在同一目录）：
 
 ```powershell
-$actual = (Get-FileHash .\ATime-v0.1.0-win-x64.zip -Algorithm SHA256).Hash
-$expected = ((Get-Content .\ATime-v0.1.0-win-x64.zip.sha256 -Raw).Trim() -split '\s+')[0]
+$actual = (Get-FileHash .\ATime-v0.1.1-win-x64.zip -Algorithm SHA256).Hash
+$expected = ((Get-Content .\ATime-v0.1.1-win-x64.zip.sha256 -Raw).Trim() -split '\s+')[0]
 $actual -eq $expected  # True 表示校验一致
 ```
 
@@ -111,7 +114,7 @@ scripts/            # 构建和打包脚本
 
 ## 当前边界与后续计划
 
-v0.1.0 首发包实现有效时长、各软件统计和桌面小窗三项核心能力；当前源码另已接入小时节奏和每日趋势图。登录自启、隐私应用排除规则、深色主题、安装器和自动更新尚未实现。
+v0.1.1 已实现有效时长、各软件统计、桌面小窗、小时节奏和每日趋势图。登录自启、隐私应用排除规则、深色主题、安装器和自动更新尚未实现。
 
 本地自动化覆盖计时、跨日与时钟调整、SQLite 一致性、旧版数据目录兼容及输入 tick 转换。真实 Windows 采集与暂停、恢复、重启、导出、清除流程有验证记录；尚未完成主动锁屏与休眠的硬件矩阵、混合 DPI 多屏和 24 小时稳定性验收。详见 [验证记录](docs/09-mvp-validation.md)。
 

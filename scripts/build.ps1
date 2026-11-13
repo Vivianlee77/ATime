@@ -14,10 +14,13 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Tests failed.' }
     & "$projectDirectory\src\ATime.Windows\Verify-InputTicks.ps1"
     if ($Publish) {
+        $appProject = [xml](Get-Content -LiteralPath "$projectDirectory\src\ATime.App\ATime.App.csproj" -Raw)
+        $version = [string]$appProject.Project.PropertyGroup.Version
+        if ($version -notmatch '^\d+\.\d+\.\d+$') { throw 'Expected a stable application version in the project file.' }
         & $dotnetCommand publish src/ATime.App/ATime.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -p:PublishTrimmed=false -p:RestoreConfigFile="$projectDirectory\NuGet.config" -p:RestoreFallbackFolders= -p:RestoreAdditionalProjectFallbackFolders= -o artifacts/ATime-win-x64
         if ($LASTEXITCODE -ne 0) { throw 'Publish failed.' }
         Copy-Item -LiteralPath "$projectDirectory\docs\08-running-mvp.md" -Destination "$projectDirectory\artifacts\ATime-win-x64\使用说明.md" -Force
-        $archive = "$projectDirectory\artifacts\ATime-v0.1.0-win-x64.zip"
+        $archive = "$projectDirectory\artifacts\ATime-v$version-win-x64.zip"
         Compress-Archive -LiteralPath "$projectDirectory\artifacts\ATime-win-x64" -DestinationPath $archive -Force
         $hash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
         "$hash  $(Split-Path -Leaf $archive)" | Set-Content -LiteralPath ($archive + '.sha256') -Encoding ascii

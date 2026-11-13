@@ -20,6 +20,6 @@ jobs:
         with:
           name: ATime-win-x64
           path: |
-            artifacts/ATime-v0.1.0-win-x64.zip
-            artifacts/ATime-v0.1.0-win-x64.zip.sha256
+            artifacts/ATime-v*-win-x64.zip
+            artifacts/ATime-v*-win-x64.zip.sha256
           if-no-files-found: error
